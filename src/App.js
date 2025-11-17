@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { defaultData } from './data/trainingData';
+import { defaultData, defaultForecastData } from './data/trainingData';
+
 const RacehorsePredictor = () => {
-  const [view, setView] = useState('import');
+  const [view, setView] = useState('comparison');
   const [predictInputs, setPredictInputs] = useState({
     age: 3,
     spsAvg: 2.30,
@@ -12,9 +13,8 @@ const RacehorsePredictor = () => {
   const [importText, setImportText] = useState('');
   const [customData, setCustomData] = useState(null);
   const [forecastImportText, setForecastImportText] = useState('');
-  const [forecastData, setForecastData] = useState(null);
+  const [forecastData, setForecastData] = useState(defaultForecastData);
 
-  
   const data = customData || defaultData;
   const data3yo = useMemo(() => data.filter(h => h.age === 3), [data]);
   const data4plus = useMemo(() => data.filter(h => h.age >= 4), [data]);
@@ -295,289 +295,261 @@ const RacehorsePredictor = () => {
           <p className="text-center text-gray-600 mb-4 text-sm">
             Model B: Biomechanics + Race Context Analysis
           </p>
-          
-          <div className="flex flex-wrap gap-2 justify-center text-sm">
-            <button onClick={() => setView('import')} className={`px-3 py-2 rounded-lg font-semibold transition-colors ${view === 'import' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}>
-              📥 Import Data (3yo/4+yo)
+        </div>
+
+<div className="bg-white rounded-lg shadow p-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <button 
+              onClick={() => setView('comparison')} 
+              className={`p-4 rounded-lg border-2 transition ${view === 'comparison' ? 'bg-blue-100 border-blue-500' : 'bg-gray-50 border-gray-300 hover:bg-gray-100'}`}
+            >
+              <div className="text-sm font-bold text-blue-700">📊 3yo & 4+yo Models</div>
             </button>
-            <button onClick={() => setView('comparison')} className={`px-3 py-2 rounded-lg font-semibold transition-colors ${view === 'comparison' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}>
-              📊 3yo & 4+yo Models
+            
+            <button 
+              onClick={() => setView('predictor')} 
+              className={`p-4 rounded-lg border-2 transition ${view === 'predictor' ? 'bg-green-100 border-green-500' : 'bg-gray-50 border-gray-300 hover:bg-gray-100'}`}
+            >
+              <div className="text-sm font-bold text-green-700">🎯 Predict Current</div>
             </button>
-            <button onClick={() => setView('predictor')} className={`px-3 py-2 rounded-lg font-semibold transition-colors ${view === 'predictor' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}>
-              🎯 Predict (Current)
+            
+            <button 
+              onClick={() => setView('forecast-model')} 
+              className={`p-4 rounded-lg border-2 transition ${view === 'forecast-model' ? 'bg-purple-100 border-purple-500' : 'bg-gray-50 border-gray-300 hover:bg-gray-100'}`}
+            >
+              <div className="text-sm font-bold text-purple-700">📈 Model B Stats</div>
             </button>
-            <button onClick={() => setView('forecast-import')} className={`px-3 py-2 rounded-lg font-semibold transition-colors ${view === 'forecast-import' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700'}`}>
-              📥 Import 2yo→3yo
-            </button>
-            <button onClick={() => setView('forecast-model')} className={`px-3 py-2 rounded-lg font-semibold transition-colors ${view === 'forecast-model' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700'}`}>
-              🔮 Model B Stats
-            </button>
-            <button onClick={() => setView('forecast-predictor')} className={`px-3 py-2 rounded-lg font-semibold transition-colors ${view === 'forecast-predictor' ? 'bg-purple-600 text-white' : 'bg-gray-200 text-gray-700'}`}>
-              🎯 Forecast 3yo
+            
+            <button 
+              onClick={() => setView('forecast-predictor')} 
+              className={`p-4 rounded-lg border-2 transition ${view === 'forecast-predictor' ? 'bg-orange-100 border-orange-500' : 'bg-gray-50 border-gray-300 hover:bg-gray-100'}`}
+            >
+              <div className="text-sm font-bold text-orange-700">🔮 Forecast 3yo</div>
             </button>
           </div>
         </div>
 
-      {view === 'import' && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold mb-3">Import Current Performance Data</h2>
-          <p className="text-sm text-gray-600 mb-3">For 3yo & 4+yo models</p>
-          <textarea
-            className="w-full h-48 p-3 border rounded-lg font-mono text-xs"
-            placeholder="Paste tab-separated data here..."
-            value={importText}
-            onChange={(e) => setImportText(e.target.value)}
-          />
-          <button onClick={handleImportData} className="w-full bg-blue-600 text-white py-2 rounded-lg font-bold mt-3">
-            Import Data
-          </button>
-        </div>
-      )}
-
-      {view === 'forecast-import' && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold mb-3">Import 2yo → 3yo Data (Model B)</h2>
-          <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-3 mb-3">
-            <p className="font-semibold text-sm mb-1">📋 Format (5 columns, tab-separated):</p>
-            <pre className="text-xs bg-white p-2 rounded">Horse  2yo_SPS  2yo_SL  2yo_Race_Dist  3yo_Optimal</pre>
+        {view === 'import' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-bold mb-3">Import Current Performance Data</h2>
+            <p className="text-sm text-gray-600 mb-3">For 3yo & 4+yo models</p>
+            <textarea
+              className="w-full h-48 p-3 border rounded-lg font-mono text-xs"
+              placeholder="Paste tab-separated data here..."
+              value={importText}
+              onChange={(e) => setImportText(e.target.value)}
+            />
+            <button onClick={handleImportData} className="w-full bg-blue-600 text-white py-2 rounded-lg font-bold mt-3">
+              Import Data
+            </button>
           </div>
-          <textarea
-            className="w-full h-48 p-3 border rounded-lg font-mono text-xs"
-            placeholder="Paste 5-column data..."
-            value={forecastImportText}
-            onChange={(e) => setForecastImportText(e.target.value)}
-          />
-          <button onClick={handleImportForecastData} className="w-full bg-purple-600 text-white py-2 rounded-lg font-bold mt-3">
-            Import Model B Data
-          </button>
-        </div>
-      )}
+        )}
 
-      {view === 'comparison' && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold mb-4 text-center">Current Performance Models</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-lg border-2 border-blue-300 bg-blue-50">
-              <h3 className="text-lg font-bold text-blue-700 mb-2">3-Year-Olds</h3>
-              {stats3yo ? (
-                <>
-                  <div className="text-4xl font-bold text-blue-600">{(stats3yo.rSquared * 100).toFixed(1)}%</div>
-                  <p className="text-xs text-gray-600">R² • {stats3yo.n} horses</p>
-                </>
-              ) : (
-                <p className="text-gray-500 text-sm">Need 10+ horses</p>
-              )}
+        {view === 'forecast-import' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-bold mb-3">Import 2yo → 3yo Data (Model B)</h2>
+            <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-3 mb-3">
+              <p className="font-semibold text-sm mb-1">📋 Format (5 columns, tab-separated):</p>
+              <pre className="text-xs bg-white p-2 rounded">Horse  2yo_SPS  2yo_SL  2yo_Race_Dist  3yo_Optimal</pre>
             </div>
-
-            <div className="p-4 rounded-lg border-2 border-green-300 bg-green-50">
-              <h3 className="text-lg font-bold text-green-700 mb-2">4+ Year-Olds</h3>
-              {stats4plus ? (
-                <>
-                  <div className="text-4xl font-bold text-green-600">{(stats4plus.rSquared * 100).toFixed(1)}%</div>
-                  <p className="text-xs text-gray-600">R² • {stats4plus.n} horses</p>
-                </>
-              ) : (
-                <p className="text-gray-500 text-sm">Need 10+ horses</p>
-              )}
-            </div>
+            <textarea
+              className="w-full h-48 p-3 border rounded-lg font-mono text-xs"
+              placeholder="Paste 5-column data..."
+              value={forecastImportText}
+              onChange={(e) => setForecastImportText(e.target.value)}
+            />
+            <button onClick={handleImportForecastData} className="w-full bg-purple-600 text-white py-2 rounded-lg font-bold mt-3">
+              Import Model B Data
+            </button>
           </div>
-        </div>
-      )}
+        )}
 
-      {view === 'predictor' && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-bold mb-3">Predict Current Optimal Distance</h2>
-          <div className="grid grid-cols-3 gap-3 mb-3">
-            <div>
-              <label className="block text-xs mb-1">Age</label>
-              <select value={predictInputs.age} onChange={(e) => setPredictInputs({...predictInputs, age: parseInt(e.target.value)})} className="w-full px-2 py-2 border rounded text-sm">
-                <option value={3}>3yo</option>
-                <option value={4}>4+yo</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs mb-1">SPS (Hz)</label>
-              <input type="number" step="0.01" value={predictInputs.spsAvg} onChange={(e) => setPredictInputs({...predictInputs, spsAvg: parseFloat(e.target.value)})} className="w-full px-2 py-2 border rounded text-sm" />
-            </div>
-            <div>
-              <label className="block text-xs mb-1">SL (m)</label>
-              <input type="number" step="0.01" value={predictInputs.slAvg} onChange={(e) => setPredictInputs({...predictInputs, slAvg: parseFloat(e.target.value)})} className="w-full px-2 py-2 border rounded text-sm" />
-            </div>
-          </div>
-
-          {(() => {
-            const currentStats = predictInputs.age === 3 ? stats3yo : stats4plus;
-            if (!currentStats) return <p className="text-center text-gray-500 text-sm">Not enough data</p>;
-
-            const prediction = currentStats.coefficients[0] + currentStats.coefficients[1] * predictInputs.spsAvg + currentStats.coefficients[2] * predictInputs.slAvg;
-
-            return (
-              <div className="bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-lg text-center border-2 border-blue-300">
-                <p className="text-xs text-gray-600 mb-1">PREDICTED DISTANCE</p>
-                <p className="text-4xl font-bold text-blue-600 mb-1">{prediction.toFixed(1)}f</p>
-                <p className="text-xl text-gray-700 font-semibold">{convertToRaceDistance(prediction)}</p>
-                <p className="text-xs text-gray-500 mt-2">R²: {(currentStats.rSquared * 100).toFixed(1)}%</p>
-              </div>
-            );
-          })()}
-        </div>
-      )}
-
-      {view === 'forecast-model' && (
-        <div className="bg-white rounded-lg shadow p-6">
-          {statsForecast ? (
-            <>
-              <h2 className="text-xl font-bold mb-4 text-center">Model B: 2yo → 3yo Forecast</h2>
-              
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg border-2 border-purple-300 mb-4">
-                <div className="text-center mb-4">
-                  <div className="text-5xl font-bold text-purple-600 mb-1">{(statsForecast.rSquared * 100).toFixed(1)}%</div>
-                  <p className="text-sm font-semibold text-gray-700 mb-1">R² Accuracy</p>
-                  <p className="text-xs text-gray-600">{statsForecast.n} horses • With Race Context</p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 text-center mb-4">
-                  <div className="bg-white rounded p-2">
-                    <p className="text-xs text-gray-600">SPS Corr</p>
-                    <p className="text-sm font-bold text-purple-700">{statsForecast.spsAvgCorr.toFixed(3)}</p>
-                  </div>
-                  <div className="bg-white rounded p-2">
-                    <p className="text-xs text-gray-600">SL Corr</p>
-                    <p className="text-sm font-bold text-purple-700">{statsForecast.slAvgCorr.toFixed(3)}</p>
-                  </div>
-                  <div className="bg-white rounded p-2">
-                    <p className="text-xs text-gray-600">Dist Corr</p>
-                    <p className="text-sm font-bold text-green-700">{statsForecast.distance2yoCorr.toFixed(3)}</p>
-                  </div>
-                </div>
+        {view === 'comparison' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-bold mb-4 text-center">Current Performance Models</h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-lg border-2 border-blue-300 bg-blue-50">
+                <h3 className="text-lg font-bold text-blue-700 mb-2">3-Year-Olds</h3>
+                {stats3yo ? (
+                  <>
+                    <div className="text-4xl font-bold text-blue-600">{(stats3yo.rSquared * 100).toFixed(1)}%</div>
+                    <p className="text-xs text-gray-600">R² • {stats3yo.n} horses</p>
+                  </>
+                ) : (
+                  <p className="text-gray-500 text-sm">Need 10+ horses</p>
+                )}
               </div>
 
-              <div className="bg-gray-50 border-2 border-gray-300 rounded-lg p-4 mb-4">
-                <h3 className="font-bold text-sm mb-3">🔢 Model B Coefficients:</h3>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div className="bg-white rounded p-2">
-                    <p className="text-gray-600">Intercept</p>
-                    <p className="text-lg font-bold">{statsForecast.coefficients[0].toFixed(4)}</p>
-                  </div>
-                  <div className="bg-white rounded p-2">
-                    <p className="text-gray-600">2yo SPS</p>
-                    <p className="text-lg font-bold text-blue-600">{statsForecast.coefficients[1].toFixed(4)}</p>
-                    <p className="text-xs text-gray-500">Per 0.1Hz: {(statsForecast.coefficients[1] * 0.1).toFixed(2)}f</p>
-                  </div>
-                  <div className="bg-white rounded p-2">
-                    <p className="text-gray-600">2yo SL ⭐</p>
-                    <p className="text-lg font-bold text-green-600">{statsForecast.coefficients[2].toFixed(4)}</p>
-                    <p className="text-xs text-gray-500">Per 0.5m: {(statsForecast.coefficients[2] * 0.5).toFixed(2)}f</p>
-                  </div>
-                  <div className="bg-white rounded p-2">
-                    <p className="text-gray-600">2yo Distance ⭐</p>
-                    <p className="text-lg font-bold text-orange-600">{statsForecast.coefficients[3].toFixed(4)}</p>
-                    <p className="text-xs text-gray-500">Per furlong: {statsForecast.coefficients[3].toFixed(2)}f</p>
+              <div className="p-4 rounded-lg border-2 border-green-300 bg-green-50">
+                <h3 className="text-lg font-bold text-green-700 mb-2">4+ Year-Olds</h3>
+                {stats4plus ? (
+                  <>
+                    <div className="text-4xl font-bold text-green-600">{(stats4plus.rSquared * 100).toFixed(1)}%</div>
+                    <p className="text-xs text-gray-600">R² • {stats4plus.n} horses</p>
+                  </>
+                ) : (
+                  <p className="text-gray-500 text-sm">Need 10+ horses</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {view === 'predictor' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-lg font-bold mb-3">Predict Current Optimal Distance</h2>
+            <div className="grid grid-cols-3 gap-3 mb-3">
+              <div>
+                <label className="block text-xs mb-1">Age</label>
+                <select value={predictInputs.age} onChange={(e) => setPredictInputs({...predictInputs, age: parseInt(e.target.value)})} className="w-full px-2 py-2 border rounded text-sm">
+                  <option value={3}>3yo</option>
+                  <option value={4}>4+yo</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs mb-1">SPS (Hz)</label>
+                <input type="number" step="0.01" value={predictInputs.spsAvg} onChange={(e) => setPredictInputs({...predictInputs, spsAvg: parseFloat(e.target.value)})} className="w-full px-2 py-2 border rounded text-sm" />
+              </div>
+              <div>
+                <label className="block text-xs mb-1">SL (m)</label>
+                <input type="number" step="0.01" value={predictInputs.slAvg} onChange={(e) => setPredictInputs({...predictInputs, slAvg: parseFloat(e.target.value)})} className="w-full px-2 py-2 border rounded text-sm" />
+              </div>
+            </div>
+
+            {(() => {
+              const currentStats = predictInputs.age === 3 ? stats3yo : stats4plus;
+              if (!currentStats) return <p className="text-center text-gray-500 text-sm">Not enough data</p>;
+
+              const prediction = currentStats.coefficients[0] + currentStats.coefficients[1] * predictInputs.spsAvg + currentStats.coefficients[2] * predictInputs.slAvg;
+
+              return (
+                <div className="bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-lg text-center border-2 border-blue-300">
+                  <p className="text-xs text-gray-600 mb-1">PREDICTED DISTANCE</p>
+                  <p className="text-4xl font-bold text-blue-600 mb-1">{prediction.toFixed(1)}f</p>
+                  <p className="text-xl text-gray-700 font-semibold">{convertToRaceDistance(prediction)}</p>
+                  <p className="text-xs text-gray-500 mt-2">R²: {(currentStats.rSquared * 100).toFixed(1)}%</p>
+                </div>
+              );
+            })()}
+          </div>
+        )}
+
+        {view === 'forecast-model' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            {statsForecast ? (
+              <>
+                <h2 className="text-xl font-bold mb-4 text-center">Model B: 2yo → 3yo Forecast</h2>
+                
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg border-2 border-purple-300 mb-4">
+                  <div className="text-center">
+                    <div className="text-5xl font-bold text-purple-600 mb-1">{(statsForecast.rSquared * 100).toFixed(1)}%</div>
+                    <p className="text-sm font-semibold text-gray-700 mb-1">R² Accuracy</p>
+                    <p className="text-xs text-gray-600">{statsForecast.n} horses • With Race Context</p>
                   </div>
                 </div>
-              </div>
 
-              {residualsForecast.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-bold text-purple-700 mb-2">Top 5 Prediction Errors</h3>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-xs border-collapse">
-                      <thead>
-                        <tr className="bg-purple-100">
-                          <th className="border border-purple-300 px-2 py-1 text-left">Horse</th>
-                          <th className="border border-purple-300 px-2 py-1 text-right">2yo Dist</th>
-                          <th className="border border-purple-300 px-2 py-1 text-right">Actual 3yo</th>
-                          <th className="border border-purple-300 px-2 py-1 text-right">Predicted</th>
-                          <th className="border border-purple-300 px-2 py-1 text-right">Error</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {residualsForecast.slice(0, 5).map((horse, idx) => (
-                          <tr key={idx} className={horse.absResidual > 2 ? 'bg-red-50' : 'bg-white'}>
-                            <td className="border border-purple-200 px-2 py-1 font-medium">{horse.horse}</td>
-                            <td className="border border-purple-200 px-2 py-1 text-right">{horse.distance2yo.toFixed(1)}f</td>
-                            <td className="border border-purple-200 px-2 py-1 text-right">{horse.distance3yo.toFixed(1)}f</td>
-                            <td className="border border-purple-200 px-2 py-1 text-right">{horse.predicted.toFixed(1)}f</td>
-                            <td className="border border-purple-200 px-2 py-1 text-right font-bold">
-                              {horse.residual > 0 ? '+' : ''}{horse.residual.toFixed(2)}f
-                            </td>
+                {residualsForecast.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-bold text-purple-700 mb-2">Top 5 Prediction Errors</h3>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs border-collapse">
+                        <thead>
+                          <tr className="bg-purple-100">
+                            <th className="border border-purple-300 px-2 py-1 text-left">Horse</th>
+                            <th className="border border-purple-300 px-2 py-1 text-right">2yo Dist</th>
+                            <th className="border border-purple-300 px-2 py-1 text-right">Actual 3yo</th>
+                            <th className="border border-purple-300 px-2 py-1 text-right">Predicted</th>
+                            <th className="border border-purple-300 px-2 py-1 text-right">Error</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {residualsForecast.slice(0, 5).map((horse, idx) => (
+                            <tr key={idx} className={horse.absResidual > 2 ? 'bg-red-50' : 'bg-white'}>
+                              <td className="border border-purple-200 px-2 py-1 font-medium">{horse.horse}</td>
+                              <td className="border border-purple-200 px-2 py-1 text-right">{horse.distance2yo.toFixed(1)}f</td>
+                              <td className="border border-purple-200 px-2 py-1 text-right">{horse.distance3yo.toFixed(1)}f</td>
+                              <td className="border border-purple-200 px-2 py-1 text-right">{horse.predicted.toFixed(1)}f</td>
+                              <td className="border border-purple-200 px-2 py-1 text-right font-bold">
+                                {horse.residual > 0 ? '+' : ''}{horse.residual.toFixed(2)}f
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center p-8">
+                <p className="text-lg text-gray-600 mb-2">No Data Loaded</p>
+                <p className="text-sm text-gray-500 mb-3">Import 2yo → 3yo data to see Model B</p>
+                <button onClick={() => setView('forecast-import')} className="px-4 py-2 bg-purple-600 text-white rounded-lg font-bold">
+                  Import Data
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {view === 'forecast-predictor' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-lg font-bold mb-3">Forecast 3yo Distance (Model B)</h2>
+            
+            {statsForecast ? (
+              <>
+                <div className="grid grid-cols-3 gap-3 mb-3">
+                  <div>
+                    <label className="block text-xs mb-1">2yo SPS (Hz)</label>
+                    <input type="number" step="0.01" value={predictInputs.spsAvg} onChange={(e) => setPredictInputs({...predictInputs, spsAvg: parseFloat(e.target.value)})} className="w-full px-2 py-2 border rounded text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs mb-1">2yo SL (m)</label>
+                    <input type="number" step="0.01" value={predictInputs.slAvg} onChange={(e) => setPredictInputs({...predictInputs, slAvg: parseFloat(e.target.value)})} className="w-full px-2 py-2 border rounded text-sm" />
+                  </div>
+                  <div>
+                    <label className="block text-xs mb-1">2yo Race Dist (f)</label>
+                    <input type="number" step="0.5" value={predictInputs.distance2yo} onChange={(e) => setPredictInputs({...predictInputs, distance2yo: parseFloat(e.target.value)})} className="w-full px-2 py-2 border rounded text-sm" />
                   </div>
                 </div>
-              )}
-            </>
-          ) : (
-            <div className="text-center p-8">
-              <p className="text-lg text-gray-600 mb-2">No Data Loaded</p>
-              <p className="text-sm text-gray-500 mb-3">Import 2yo → 3yo data to see Model B</p>
-              <button onClick={() => setView('forecast-import')} className="px-4 py-2 bg-purple-600 text-white rounded-lg font-bold">
-                Import Data
-              </button>
-            </div>
-          )}
-        </div>
-      )}
 
-      {view === 'forecast-predictor' && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-bold mb-3">Forecast 3yo Distance (Model B)</h2>
-          
-          {statsForecast ? (
-            <>
-              <div className="grid grid-cols-3 gap-3 mb-3">
-                <div>
-                  <label className="block text-xs mb-1">2yo SPS (Hz)</label>
-                  <input type="number" step="0.01" value={predictInputs.spsAvg} onChange={(e) => setPredictInputs({...predictInputs, spsAvg: parseFloat(e.target.value)})} className="w-full px-2 py-2 border rounded text-sm" />
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg text-center border-2 border-purple-300">
+                  <p className="text-xs text-gray-600 mb-1">PREDICTED 3YO DISTANCE</p>
+                  <p className="text-xs text-gray-500 mb-2">(Model B: Bio + Race Context)</p>
+                  <p className="text-4xl font-bold text-purple-600 mb-1">
+                    {(() => {
+                      const prediction = statsForecast.coefficients[0] + 
+                                       statsForecast.coefficients[1] * predictInputs.spsAvg + 
+                                       statsForecast.coefficients[2] * predictInputs.slAvg +
+                                       statsForecast.coefficients[3] * predictInputs.distance2yo;
+                      return prediction.toFixed(1);
+                    })()}f
+                  </p>
+                  <p className="text-xl text-gray-700 font-semibold">
+                    {(() => {
+                      const prediction = statsForecast.coefficients[0] + 
+                                       statsForecast.coefficients[1] * predictInputs.spsAvg + 
+                                       statsForecast.coefficients[2] * predictInputs.slAvg +
+                                       statsForecast.coefficients[3] * predictInputs.distance2yo;
+                      return convertToRaceDistance(prediction);
+                    })()}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-2">R²: {(statsForecast.rSquared * 100).toFixed(1)}% • {statsForecast.n} horses</p>
                 </div>
-                <div>
-                  <label className="block text-xs mb-1">2yo SL (m)</label>
-                  <input type="number" step="0.01" value={predictInputs.slAvg} onChange={(e) => setPredictInputs({...predictInputs, slAvg: parseFloat(e.target.value)})} className="w-full px-2 py-2 border rounded text-sm" />
-                </div>
-                <div>
-                  <label className="block text-xs mb-1">2yo Race Dist (f)</label>
-                  <input type="number" step="0.5" value={predictInputs.distance2yo} onChange={(e) => setPredictInputs({...predictInputs, distance2yo: parseFloat(e.target.value)})} className="w-full px-2 py-2 border rounded text-sm" />
-                </div>
+              </>
+            ) : (
+              <div className="text-center p-6">
+                <p className="text-sm text-gray-600 mb-3">No Model B data loaded</p>
+                <button onClick={() => setView('forecast-import')} className="px-4 py-2 bg-purple-600 text-white rounded-lg font-bold text-sm">
+                  Import Data
+                </button>
               </div>
-
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg text-center border-2 border-purple-300">
-                <p className="text-xs text-gray-600 mb-1">PREDICTED 3YO DISTANCE</p>
-                <p className="text-xs text-gray-500 mb-2">(Model B: Bio + Race Context)</p>
-                <p className="text-4xl font-bold text-purple-600 mb-1">
-                  {(() => {
-                    const prediction = statsForecast.coefficients[0] + 
-                                     statsForecast.coefficients[1] * predictInputs.spsAvg + 
-                                     statsForecast.coefficients[2] * predictInputs.slAvg +
-                                     statsForecast.coefficients[3] * predictInputs.distance2yo;
-                    return prediction.toFixed(1);
-                  })()}f
-                </p>
-                <p className="text-xl text-gray-700 font-semibold">
-                  {(() => {
-                    const prediction = statsForecast.coefficients[0] + 
-                                     statsForecast.coefficients[1] * predictInputs.spsAvg + 
-                                     statsForecast.coefficients[2] * predictInputs.slAvg +
-                                     statsForecast.coefficients[3] * predictInputs.distance2yo;
-                    return convertToRaceDistance(prediction);
-                  })()}
-                </p>
-                <p className="text-xs text-gray-500 mt-2">R²: {(statsForecast.rSquared * 100).toFixed(1)}% • {statsForecast.n} horses</p>
-              </div>
-            </>
-          ) : (
-            <div className="text-center p-6">
-              <p className="text-sm text-gray-600 mb-3">No Model B data loaded</p>
-              <button onClick={() => setView('forecast-import')} className="px-4 py-2 bg-purple-600 text-white rounded-lg font-bold text-sm">
-                Import Data
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        )}
+      </div>
     </div>
-  </div>
   );
 };
+
 export default RacehorsePredictor;
