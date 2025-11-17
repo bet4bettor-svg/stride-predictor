@@ -247,7 +247,7 @@ const RacehorsePredictor = () => {
 
   const stats3yo = useMemo(() => calculateModelStats(data3yo), [data3yo]);
   const stats4plus = useMemo(() => calculateModelStats(data4plus), [data4plus]);
-  const statsForecast = useMemo(() => forecastData ? calculateForecastModelStats[forecastData, calculateForecastModelStats] : null, [forecastData]);
+  const statsForecast = useMemo(() => forecastData ? calculateForecastModelStats(forecastData) : null, [forecastData, calculateForecastModelStats]);
 
   const residualsForecast = useMemo(() => {
     if (!forecastData || !statsForecast) return [];
