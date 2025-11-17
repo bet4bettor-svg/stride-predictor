@@ -1,8 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { defaultData } from './data/trainingData';
-export default () => {
+const RacehorsePredictor = () => {
   const [view, setView] = useState('import');
-  const [selectedAge, setSelectedAge] = useState('4plus');
   const [predictInputs, setPredictInputs] = useState({
     age: 3,
     spsAvg: 2.30,
@@ -248,7 +247,7 @@ export default () => {
 
   const stats3yo = useMemo(() => calculateModelStats(data3yo), [data3yo]);
   const stats4plus = useMemo(() => calculateModelStats(data4plus), [data4plus]);
-  const statsForecast = useMemo(() => forecastData ? calculateForecastModelStats(forecastData) : null, [forecastData]);
+  const statsForecast = useMemo(() => forecastData ? calculateForecastModelStats[forecastData, calculateForecastModelStats] : null, [forecastData]);
 
   const residualsForecast = useMemo(() => {
     if (!forecastData || !statsForecast) return [];
@@ -581,3 +580,4 @@ export default () => {
   </div>
   );
 };
+export default RacehorsePredictor;
